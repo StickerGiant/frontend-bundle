@@ -30,7 +30,7 @@ class CachedManifestLoader implements ManifestLoaderInterface
 
             $this->cache->write(sprintf('<?php return %s;', var_export($entries, true)), array($resource));
         } else {
-            $entries = include $this->cache->getPath();
+            $entries = include $this->cache;
         }
 
         return new Manifest($entries);

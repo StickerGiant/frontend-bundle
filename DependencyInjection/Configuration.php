@@ -32,8 +32,10 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue(array('.*bundles\/.*'))
                 ->end()
                 ->append($this->addLivereloadSection())
+                ->scalarNode('strategy')->defaultValue('manifest')->end()
                 ->append($this->addPackagePrefixSection(self::DEFAULT_PREFIX))
                 ->append($this->addPackageManifestSection())
+                ->append($this->addPackageRevVersionSection())
                 ->arrayNode('packages')
                     ->useAttributeAsKey('name')
                     ->prototype('array')
@@ -79,6 +81,14 @@ class Configuration implements ConfigurationInterface
                 ->end()
             ->end()
         ;
+    }
+
+    private function addStrategySection()
+    {
+      return $this->createRoot('strategy')
+        ->scalarNode('strategy')
+        ->defaultValue('manifest')
+        ->end();
     }
 
     private function addPackagePrefixSection($defaultValue = null)
@@ -132,6 +142,28 @@ class Configuration implements ConfigurationInterface
                 ->ifString()
                 ->then(function ($v) { return array('enabled' => true, 'path' => $v); })
             ->end()
+        ;
+    }
+
+    private function addPackageRevVersionSection()
+    {
+      return $this->createRoot('revversion')
+        ->canBeEnabled()
+        ->children()
+        ->scalarNode('format')
+        ->defaultValue('json')
+        ->validate()
+        ->ifNotInArray(array('json'))
+        ->thenInvalid('For the moment only JSON manifest files are supported')
+        ->end()
+        ->end()
+        ->scalarNode('path')->isRequired()->end()
+        ->scalarNode('root_key')->defaultNull()->end()
+        ->end()
+        ->beforeNormalization()
+        ->ifString()
+        ->then(function ($v) { return array('enabled' => true, 'path' => $v); })
+        ->end()
         ;
     }
 

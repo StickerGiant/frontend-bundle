@@ -27,9 +27,11 @@ abstract class BaseExtensionHelper
         $prefixes = $config['prefix'];
         $isUrl = Util::containsUrl($prefixes);
 
+        $strategy_config = $config[$config['strategy']];
+
         return $this->getPackageDefinition($isUrl)
             ->addArgument($isUrl ? $prefixes : $prefixes[0])
-            ->addArgument($this->createVersionStrategy($name, $config['manifest']))
+            ->addArgument($this->createVersionStrategy($name, $config['strategy'], $strategy_config))
             ->setPublic(false)
         ;
     }
@@ -48,10 +50,13 @@ abstract class BaseExtensionHelper
         return $this->namespaceService("_package.$name");
     }
 
-    protected function createVersionStrategy($packageName, $manifest)
+    protected function createVersionStrategy($packageName, $strategy, $stategy_config)
     {
-        if ($manifest['enabled']) {
-            return $this->createManifestVersionStrategy($packageName, $manifest);
+        switch ($strategy) {
+          case 'manifest':
+            return $this->createManifestVersionStrategy($packageName, $stategy_config);
+          case 'revversion':
+            return $this->createRevVersionVersionStrategy($packageName, $stategy_config);
         }
 
         return $this->createEmptyVersionStrategy($packageName);
@@ -86,6 +91,32 @@ abstract class BaseExtensionHelper
         $this->container->setDefinition($versionStrategyId, $versionStrategy);
 
         return new Reference($versionStrategyId);
+    }
+
+    protected function createRevVersionVersionStrategy($packageName, $config)
+    {
+      $loader = new DefinitionDecorator($this->namespaceService('manifest.loader.'.$config['format']));
+      $loader
+        ->addArgument($config['path'])
+        ->addArgument($config['root_key'])
+      ;
+
+      $loaderId = $this->namespaceService("_package.$packageName.manifest_loader");
+      $this->container->setDefinition($loaderId, $loader);
+
+      $cachedLoader = new DefinitionDecorator($this->namespaceService('manifest.loader.cached'));
+      $cachedLoader->addArgument(new Reference($loaderId));
+
+      $cachedLoaderId = $this->namespaceService("_package.$packageName.manifest_loader_cached");
+      $this->container->setDefinition($cachedLoaderId, $cachedLoader);
+
+      $versionStrategy = new DefinitionDecorator($this->namespaceService('version_strategy.revversion'));
+      $versionStrategy->addArgument(new Reference($cachedLoaderId));
+
+      $versionStrategyId = $this->namespaceService("_package.$packageName.version_strategy");
+      $this->container->setDefinition($versionStrategyId, $versionStrategy);
+
+      return new Reference($versionStrategyId);
     }
 
     protected function namespaceService($id)

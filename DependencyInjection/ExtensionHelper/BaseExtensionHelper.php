@@ -27,11 +27,15 @@ abstract class BaseExtensionHelper
         $prefixes = $config['prefix'];
         $isUrl = Util::containsUrl($prefixes);
 
-        $strategy_config = $config[$config['strategy']];
+        $strategy_config = array();
+        $strategy = 'empty';
+        if (isset($config['strategy']) && ($strategy = $config['strategy']) && isset($config[$strategy])) {
+          $strategy_config = $config[$strategy];
+        }
 
         return $this->getPackageDefinition($isUrl)
             ->addArgument($isUrl ? $prefixes : $prefixes[0])
-            ->addArgument($this->createVersionStrategy($name, $config['strategy'], $strategy_config))
+            ->addArgument($this->createVersionStrategy($name, $strategy, $strategy_config))
             ->setPublic(false)
         ;
     }

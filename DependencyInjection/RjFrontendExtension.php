@@ -40,10 +40,7 @@ class RjFrontendExtension extends Extension
         if ($config['override_default_package']) {
             $loader->load('fallback.yml');
 
-            $defaultPackage = $helper->createPackage('default', array(
-                'prefix'   => $config['prefix'],
-                'manifest' => $config['manifest'],
-            ));
+            $defaultPackage = $helper->createPackage('default', $config);
 
             $defaultPackageId = $helper->getPackageId('default');
             $container->setDefinition($defaultPackageId, $defaultPackage);

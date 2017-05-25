@@ -6,3 +6,7 @@ services:
     rj_frontend.version_strategy.manifest:
         class: Rj\FrontendBundle\VersionStrategy\ManifestVersionStrategy
         public: false
+
+    rj_frontend.version_strategy.revversion:
+        class: Rj\FrontendBundle\VersionStrategy\RevVersionStrategy
+        public: false

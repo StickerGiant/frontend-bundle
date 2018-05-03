@@ -2,11 +2,12 @@
 
 namespace Rj\FrontendBundle\Asset;
 
-use Symfony\Component\Asset\PathPackage as BasePathPackage;
+use Rj\FrontendBundle\VersionStrategy\VersionStrategyInterface;
+use \Symfony\Component\Asset\PathPackage as BasePathPackage;
 
 class PathPackage extends BasePathPackage
 {
-    public function __construct($basePath, VersionStrategy $versionStrategy)
+    public function __construct($basePath, VersionStrategyInterface $versionStrategy)
     {
         parent::__construct($basePath, $versionStrategy);
     }

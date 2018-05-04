@@ -7,7 +7,7 @@ use \Symfony\Component\Asset\PathPackage as BasePathPackage;
 
 class PathPackage extends BasePathPackage
 {
-    public function __construct($basePath, VersionStrategyInterface $versionStrategy)
+    public function __construct($basePath, $versionStrategy)
     {
         parent::__construct($basePath, $versionStrategy);
     }

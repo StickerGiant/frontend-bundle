@@ -2,8 +2,6 @@
 
 namespace Rj\FrontendBundle\VersionStrategy;
 
-use Rj\FrontendBundle\VersionStrategy\VersionStrategyInterface;
-
 class RevVersionStrategy implements VersionStrategyInterface {
   private $rev_version;
 

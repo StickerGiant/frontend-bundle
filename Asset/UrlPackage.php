@@ -6,7 +6,7 @@ use Symfony\Component\Asset\UrlPackage as BaseUrlPackage;
 
 class UrlPackage extends BaseUrlPackage
 {
-    public function __construct($baseUrls, VersionStrategy $versionStrategy)
+    public function __construct($baseUrls, $versionStrategy)
     {
         parent::__construct($baseUrls, $versionStrategy);
     }
